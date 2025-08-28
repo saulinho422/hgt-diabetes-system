@@ -57,24 +57,26 @@ const Navbar = () => {
           </div>
 
           {/* Navigation Links - Desktop */}
-          <div className="hidden md:flex space-x-1">
-            {navItems.map(({ path, icon: Icon, label, color }) => (
-              <Link
-                key={path}
-                to={path}
-                className={`
-                  flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200
-                  ${isActive(path) 
-                    ? 'bg-blue-50 text-blue-700 border-2 border-blue-200' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
-                  }
-                `}
-              >
-                <Icon className={`h-5 w-5 ${isActive(path) ? 'text-blue-600' : color}`} />
-                <span className="font-medium">{label}</span>
-              </Link>
-            ))}
-          </div>
+          {isAuthenticated && (
+            <div className="hidden md:flex space-x-1">
+              {navItems.map(({ path, icon: Icon, label, color }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`
+                    flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200
+                    ${isActive(path) 
+                      ? 'bg-blue-50 text-blue-700 border-2 border-blue-200' 
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                    }
+                  `}
+                >
+                  <Icon className={`h-5 w-5 ${isActive(path) ? 'text-blue-600' : color}`} />
+                  <span className="font-medium">{label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Status Indicator e User Menu */}
           <div className="hidden md:flex items-center space-x-3">
@@ -114,26 +116,28 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden border-t border-gray-100">
-          <div className="flex justify-around py-2">
-            {navItems.slice(0, 4).map(({ path, icon: Icon, label, color }) => (
-              <Link
-                key={path}
-                to={path}
-                className={`
-                  flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200
-                  ${isActive(path) 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-gray-600'
-                  }
-                `}
-              >
-                <Icon className={`h-5 w-5 ${isActive(path) ? 'text-blue-600' : color}`} />
-                <span className="text-xs mt-1 font-medium">{label}</span>
-              </Link>
-            ))}
+        {isAuthenticated && (
+          <div className="md:hidden border-t border-gray-100">
+            <div className="flex justify-around py-2">
+              {navItems.slice(0, 4).map(({ path, icon: Icon, label, color }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`
+                    flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200
+                    ${isActive(path) 
+                      ? 'bg-blue-50 text-blue-700' 
+                      : 'text-gray-600'
+                    }
+                  `}
+                >
+                  <Icon className={`h-5 w-5 ${isActive(path) ? 'text-blue-600' : color}`} />
+                  <span className="text-xs mt-1 font-medium">{label}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   );

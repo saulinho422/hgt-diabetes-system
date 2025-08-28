@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './hooks/useAuth';
+import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import Registro from './pages/Registro';
@@ -19,32 +20,60 @@ function App() {
           <main className="container mx-auto px-4 py-8">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/registro" element={<Registro />} />
-            <Route path="/historico" element={<Historico />} />
-            <Route path="/relatorios" element={<Relatorios />} />
-            <Route path="/configuracoes" element={<Configuracoes />} />
-          </Routes>
-        </main>
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-            success: {
+              <Route 
+                path="/registro" 
+                element={
+                  <ProtectedRoute>
+                    <Registro />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/historico" 
+                element={
+                  <ProtectedRoute>
+                    <Historico />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/relatorios" 
+                element={
+                  <ProtectedRoute>
+                    <Relatorios />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/configuracoes" 
+                element={
+                  <ProtectedRoute>
+                    <Configuracoes />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </main>
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
               style: {
-                background: '#10b981',
+                background: '#363636',
+                color: '#fff',
               },
-            },
-            error: {
-              style: {
-                background: '#ef4444',
+              success: {
+                style: {
+                  background: '#10b981',
+                },
               },
-            },
-          }}
-        />
+              error: {
+                style: {
+                  background: '#ef4444',
+                },
+              },
+            }}
+          />
         </div>
       </Router>
     </AuthProvider>
