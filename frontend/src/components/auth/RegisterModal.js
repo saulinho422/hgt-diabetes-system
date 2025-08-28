@@ -73,9 +73,9 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     
     try {
       const { error } = await signUp(formData.email, formData.password, {
-        fullName: formData.fullName,
-        diabetesType: formData.diabetesType,
-        dateOfBirth: formData.dateOfBirth
+        full_name: formData.fullName,
+        diabetes_type: formData.diabetesType,
+        date_of_birth: formData.dateOfBirth
       });
       
       if (error) {

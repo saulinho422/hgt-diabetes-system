@@ -1,18 +1,20 @@
-import React from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Configuração do Supabase
+// Configuração do Supabase com a nova chave API válida
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://rvkocbmfpwjsnnumawqd.supabase.co';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2a29jYm1mcHdqc25udW1hd3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUzNzc3NzcsImV4cCI6MjA1MDk1Mzc3N30.ZftdgexAE6b2NzQF9HuQ1_mD6TMXJJGfGI7lNWWz8pU';
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2a29jYm1mcHdqc25udW1hd3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzNDk0NTMsImV4cCI6MjA3MTkyNTQ1M30.WfCBy2-R9gyFDvpk-7JhfAn6fgvPrW_fN-Mr0hNs1xk';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  },
-  realtime: {
-    enabled: true
+console.log('🔧 Supabase configurado com nova chave válida ✅');
+
+// Criação do cliente Supabase
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Teste básico de conectividade
+supabase.auth.getSession().then(({ data, error }) => {
+  if (error) {
+    console.error('❌ Erro na sessão:', error);
+  } else {
+    console.log('✅ Cliente Supabase funcionando corretamente');
   }
 });
 
@@ -30,14 +32,23 @@ export const TABLES = {
 export const supabaseHelpers = {
   // Autenticação
   async signUp(email, password, metadata = {}) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata
-      }
-    });
-    return { data, error };
+    console.log('🚀 Tentando signup com nova chave API');
+    
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      });
+      
+      console.log('📋 Resposta do signup:', { data, error });
+      return { data, error };
+    } catch (catchError) {
+      console.error('💥 Erro no signup:', catchError);
+      return { data: null, error: catchError };
+    }
   },
 
   async signIn(email, password) {
@@ -58,60 +69,60 @@ export const supabaseHelpers = {
     return { user, error };
   },
 
-  // Glicemia
-  async createGlucoseRecord(record) {
+  // Funções de dados
+  async createGlucoseRecord(userId, glucoseValue, notes = '', mealType = null) {
     const { data, error } = await supabase
       .from(TABLES.GLUCOSE_RECORDS)
-      .insert([record])
+      .insert([
+        {
+          user_id: userId,
+          glucose_value: glucoseValue,
+          notes,
+          meal_type: mealType,
+          recorded_at: new Date().toISOString()
+        }
+      ])
       .select();
+    
     return { data, error };
   },
 
-  async getGlucoseRecords(userId, filters = {}) {
-    let query = supabase
+  async getGlucoseRecords(userId, limit = 50) {
+    const { data, error } = await supabase
       .from(TABLES.GLUCOSE_RECORDS)
       .select('*')
       .eq('user_id', userId)
-      .order('date', { ascending: false });
-
-    if (filters.startDate) {
-      query = query.gte('date', filters.startDate);
-    }
-    if (filters.endDate) {
-      query = query.lte('date', filters.endDate);
-    }
-    if (filters.period) {
-      query = query.eq('period', filters.period);
-    }
-
-    const { data, error } = await query;
+      .order('recorded_at', { ascending: false })
+      .limit(limit);
+    
     return { data, error };
   },
 
-  // Insulina
-  async createInsulinRecord(record) {
+  async createInsulinRecord(userId, insulinAmount, insulinType, notes = '') {
     const { data, error } = await supabase
       .from(TABLES.INSULIN_RECORDS)
-      .insert([record])
+      .insert([
+        {
+          user_id: userId,
+          insulin_amount: insulinAmount,
+          insulin_type: insulinType,
+          notes,
+          recorded_at: new Date().toISOString()
+        }
+      ])
       .select();
+    
     return { data, error };
   },
 
-  async getInsulinRecords(userId, filters = {}) {
-    let query = supabase
+  async getInsulinRecords(userId, limit = 50) {
+    const { data, error } = await supabase
       .from(TABLES.INSULIN_RECORDS)
       .select('*')
       .eq('user_id', userId)
-      .order('date', { ascending: false });
-
-    if (filters.startDate) {
-      query = query.gte('date', filters.startDate);
-    }
-    if (filters.endDate) {
-      query = query.lte('date', filters.endDate);
-    }
-
-    const { data, error } = await query;
+      .order('recorded_at', { ascending: false })
+      .limit(limit);
+    
     return { data, error };
   },
 
@@ -122,59 +133,61 @@ export const supabaseHelpers = {
       .select('*')
       .eq('user_id', userId)
       .single();
+    
     return { data, error };
   },
 
   async updateUserSettings(userId, settings) {
     const { data, error } = await supabase
       .from(TABLES.USER_SETTINGS)
-      .upsert([{ user_id: userId, ...settings }])
+      .upsert([
+        {
+          user_id: userId,
+          ...settings
+        }
+      ])
       .select();
+    
     return { data, error };
   },
 
-  // Alertas
-  async getAlerts(userId) {
+  // Relatórios e análises
+  async getGlucoseStatistics(userId, days = 30) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
     const { data, error } = await supabase
-      .from(TABLES.ALERTS)
-      .select('*')
+      .from(TABLES.GLUCOSE_RECORDS)
+      .select('glucose_value, recorded_at')
       .eq('user_id', userId)
-      .eq('read', false)
-      .order('created_at', { ascending: false });
+      .gte('recorded_at', startDate.toISOString())
+      .order('recorded_at', { ascending: true });
+    
     return { data, error };
   },
 
-  async markAlertAsRead(alertId) {
-    const { data, error } = await supabase
-      .from(TABLES.ALERTS)
-      .update({ read: true })
-      .eq('id', alertId);
-    return { data, error };
-  },
-
-  // Real-time subscriptions
-  subscribeToGlucoseRecords(userId, callback) {
-    return supabase
-      .channel('glucose-changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: TABLES.GLUCOSE_RECORDS, filter: `user_id=eq.${userId}` },
-        callback
-      )
-      .subscribe();
-  },
-
-  subscribeToAlerts(userId, callback) {
-    return supabase
-      .channel('alerts-changes')
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: TABLES.ALERTS, filter: `user_id=eq.${userId}` },
-        callback
-      )
-      .subscribe();
+  async getRecentRecords(userId, limit = 10) {
+    const glucosePromise = this.getGlucoseRecords(userId, limit);
+    const insulinPromise = this.getInsulinRecords(userId, limit);
+    
+    const [glucoseResult, insulinResult] = await Promise.all([
+      glucosePromise,
+      insulinPromise
+    ]);
+    
+    return {
+      glucose: glucoseResult,
+      insulin: insulinResult
+    };
   }
 };
 
-// Context Provider para facilitar o uso no React
-export const SupabaseContext = React.createContext(supabase);
+// Função para verificar se o usuário está autenticado
+export const getCurrentUser = () => supabase.auth.getUser();
+
+// Função para escutar mudanças de autenticação
+export const onAuthStateChange = (callback) => {
+  return supabase.auth.onAuthStateChange(callback);
+};
 
 export default supabase;
