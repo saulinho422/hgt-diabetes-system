@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, 
-  Filter, 
   Download, 
   Edit, 
   Trash2, 
@@ -27,7 +26,7 @@ const Historico = () => {
 
   useEffect(() => {
     filterRecords();
-  }, [records, searchTerm, dateFilter, glucoseFilter]);
+  }, [records, searchTerm, dateFilter, glucoseFilter, filterRecords]);
 
   const fetchRecords = async () => {
     try {

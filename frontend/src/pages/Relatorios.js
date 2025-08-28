@@ -3,9 +3,7 @@ import {
   BarChart3, 
   TrendingUp, 
   Target, 
-  Calendar,
   Download,
-  Eye,
   Activity,
   AlertTriangle,
   CheckCircle
@@ -98,12 +96,6 @@ const Relatorios = () => {
     { key: 'insulin', label: 'Eficácia da Insulina', icon: Target },
     { key: 'patterns', label: 'Padrões e Tendências', icon: TrendingUp }
   ];
-
-  const getStatusColor = (value, thresholds) => {
-    if (value >= thresholds.good) return 'text-green-600 bg-green-50';
-    if (value >= thresholds.warning) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
-  };
 
   const getStatusIcon = (value, thresholds) => {
     if (value >= thresholds.good) return <CheckCircle className="h-5 w-5 text-green-500" />;
