@@ -5,15 +5,6 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://rvkocbmfpwjsnnumawqd.supabase.co';
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2a29jYm1mcHdqc25udW1hd3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUzNzc3NzcsImV4cCI6MjA1MDk1Mzc3N30.ZftdgexAE6b2NzQF9HuQ1_mD6TMXJJGfGI7lNWWz8pU';
 
-// Debug: verificar se as variáveis estão sendo carregadas
-console.log('🔧 Configuração Supabase:');
-console.log('📍 URL:', supabaseUrl);
-console.log('🔑 Anon Key:', supabaseAnonKey ? 'Carregada ✅' : 'Não encontrada ❌');
-console.log('🌍 ENV Vars:', {
-  REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL,
-  NODE_ENV: process.env.NODE_ENV
-});
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
