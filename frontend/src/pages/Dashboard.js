@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -18,11 +18,15 @@ import GlucoseChart from '../components/GlucoseChart';
 import InsulinChart from '../components/InsulinChart';
 import StatsCard from '../components/StatsCard';
 import RecentRecords from '../components/RecentRecords';
+import LoginModal from '../components/auth/LoginModal';
+import RegisterModal from '../components/auth/RegisterModal';
 import AlertPanel from '../components/AlertPanel';
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
-  const { dashboardData, loading, error } = useDashboardData();
+  const { dashboardData, loading } = useDashboardData();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   // Dados padrão caso não esteja autenticado
   const defaultData = {
@@ -75,23 +79,49 @@ const Dashboard = () => {
   // Se não estiver autenticado, mostrar tela de login/demo
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Activity className="h-8 w-8 text-blue-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sistema HGT</h2>
-          <p className="text-gray-600 mb-6">Controle completo da sua diabetes</p>
-          <div className="space-y-3">
-            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-              Fazer Login
-            </button>
-            <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
-              Criar Conta
-            </button>
+      <>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+          <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Activity className="h-8 w-8 text-blue-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Sistema HGT</h2>
+            <p className="text-gray-600 mb-6">Controle completo da sua diabetes</p>
+            <div className="space-y-3">
+              <button 
+                onClick={() => setShowLoginModal(true)}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Fazer Login
+              </button>
+              <button 
+                onClick={() => setShowRegisterModal(true)}
+                className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Criar Conta
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+        
+        {/* Modais de Autenticação */}
+        <LoginModal 
+          isOpen={showLoginModal} 
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToRegister={() => {
+            setShowLoginModal(false);
+            setShowRegisterModal(true);
+          }}
+        />
+        <RegisterModal 
+          isOpen={showRegisterModal} 
+          onClose={() => setShowRegisterModal(false)}
+          onSwitchToLogin={() => {
+            setShowRegisterModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      </>
     );
   }
 

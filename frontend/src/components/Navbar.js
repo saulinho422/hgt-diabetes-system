@@ -6,13 +6,32 @@ import {
   History, 
   BarChart3, 
   Settings,
-  Heart
+  Heart,
+  LogOut,
+  User
 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { toast } from 'react-hot-toast';
 
 const Navbar = () => {
   const location = useLocation();
+  const { user, isAuthenticated, signOut } = useAuth();
   
   const isActive = (path) => location.pathname === path;
+  
+  const handleLogout = async () => {
+    try {
+      const { error } = await signOut();
+      if (error) {
+        toast.error('Erro ao fazer logout');
+      } else {
+        toast.success('Logout realizado com sucesso');
+      }
+    } catch (error) {
+      console.error('Erro no logout:', error);
+      toast.error('Erro ao fazer logout');
+    }
+  };
   
   const navItems = [
     { path: '/', icon: Activity, label: 'Dashboard', color: 'text-blue-600' },
@@ -57,12 +76,40 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Status Indicator */}
+          {/* Status Indicator e User Menu */}
           <div className="hidden md:flex items-center space-x-3">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-600">Sistema Ativo</span>
-            </div>
+            {isAuthenticated ? (
+              <>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-gray-600">Online</span>
+                </div>
+                
+                {/* User Menu */}
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-gray-50 rounded-lg">
+                    <User className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm text-gray-700">
+                      {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'}
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-1 px-3 py-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Sair"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="text-sm">Sair</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span className="text-sm text-gray-600">Não conectado</span>
+              </div>
+            )}
           </div>
         </div>
 
