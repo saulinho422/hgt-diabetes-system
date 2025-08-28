@@ -1,0 +1,16 @@
+# HGT System
+
+Sistema completo para controle e monitoramento da diabetes.
+
+## Recursos
+
+- Registro de glicemia e insulina
+- Análises avançadas com gráficos
+- Relatórios médicos
+- Alertas inteligentes
+- Backup de dados
+- Interface responsiva
+
+## Uso
+
+Este é um PWA (Progressive Web App) que pode ser instalado no seu dispositivo.

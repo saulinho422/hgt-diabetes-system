@@ -1,0 +1,452 @@
+/* ===== RESET E BASE ===== */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Fontes personalizadas */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Variáveis CSS personalizadas */
+:root {
+  /* Cores primárias */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-light: #60a5fa;
+  
+  /* Cores da diabetes/saúde */
+  --color-glucose-normal: #10b981;
+  --color-glucose-high: #f59e0b;
+  --color-glucose-critical: #ef4444;
+  --color-insulin: #8b5cf6;
+  
+  /* Gradientes médicos */
+  --gradient-health: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  
+  /* Sombras médicas */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Transições */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  
+  /* Bordas */
+  --border-radius: 12px;
+  --border-radius-large: 16px;
+  --border-radius-small: 8px;
+}
+
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Base do documento */
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  font-variation-settings: 'opsz' 32;
+  line-height: 1.6;
+  color: #1f2937;
+  background-color: #f8fafc;
+  overflow-x: hidden;
+  
+  /* Melhor renderização de fontes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ===== ELEMENTOS GLOBAIS ===== */
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Botões base */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  text-transform: none;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Inputs base */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  appearance: none;
+  border: 1px solid #d1d5db;
+  border-radius: var(--border-radius-small);
+  padding: 0.75rem;
+  transition: all var(--transition-fast);
+  background-color: white;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ===== CLASSES UTILITÁRIAS MÉDICAS ===== */
+
+/* Status de glicemia */
+.glucose-normal {
+  color: var(--color-glucose-normal);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.glucose-high {
+  color: var(--color-glucose-high);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.glucose-critical {
+  color: var(--color-glucose-critical);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Gradientes médicos */
+.bg-gradient-health {
+  background: var(--gradient-health);
+}
+
+.bg-gradient-warning {
+  background: var(--gradient-warning);
+}
+
+.bg-gradient-danger {
+  background: var(--gradient-danger);
+}
+
+.bg-gradient-primary {
+  background: var(--gradient-primary);
+}
+
+/* Cards médicos */
+.medical-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-normal);
+  border: 1px solid #f1f5f9;
+}
+
+.medical-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.medical-card-danger {
+  border-left: 4px solid var(--color-glucose-critical);
+}
+
+.medical-card-warning {
+  border-left: 4px solid var(--color-glucose-high);
+}
+
+.medical-card-success {
+  border-left: 4px solid var(--color-glucose-normal);
+}
+
+/* Badges médicos */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-success {
+  color: var(--color-glucose-normal);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.badge-warning {
+  color: var(--color-glucose-high);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.badge-danger {
+  color: var(--color-glucose-critical);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.badge-info {
+  color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Números de glicemia */
+.glucose-value {
+  font-family: 'Inter', monospace;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.glucose-value-large {
+  font-size: 2.5rem;
+}
+
+.glucose-value-small {
+  font-size: 1.125rem;
+}
+
+/* ===== ANIMAÇÕES MÉDICAS ===== */
+
+/* Pulsação para alertas críticos */
+@keyframes pulse-medical {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+.pulse-medical {
+  animation: pulse-medical 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Fade in suave */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Slide in lateral */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+/* ===== LOADING E SKELETONS ===== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Loading spinner médico */
+.medical-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f1f5f9;
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVIDADE MÉDICA ===== */
+
+/* Tablets médicos */
+@media (max-width: 768px) {
+  .glucose-value-large {
+    font-size: 2rem;
+  }
+  
+  .medical-card {
+    margin: 0.5rem;
+    border-radius: var(--border-radius-small);
+  }
+  
+  /* Otimizações para touch */
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    min-height: 44px; /* Tamanho mínimo recomendado para touch */
+  }
+}
+
+/* Dispositivos móveis */
+@media (max-width: 480px) {
+  .glucose-value {
+    font-size: 1.25rem;
+  }
+  
+  .glucose-value-large {
+    font-size: 1.75rem;
+  }
+  
+  /* Layout compacto para móveis */
+  .medical-card {
+    margin: 0.25rem;
+    padding: 1rem;
+  }
+}
+
+/* ===== MODO ESCURO ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text: #f1f5f9;
+    --color-background: #0f172a;
+    --color-card: #1e293b;
+  }
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.dark .medical-card {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+/* ===== ACESSIBILIDADE ===== */
+
+/* Redução de movimento para usuários sensíveis */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Melhor contraste para usuários com necessidades visuais */
+@media (prefers-contrast: high) {
+  .medical-card {
+    border: 2px solid #000;
+  }
+  
+  .badge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* ===== IMPRESSÃO ===== */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  .medical-card {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  /* Ocultar elementos não essenciais na impressão */
+  button,
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Melhorar legibilidade dos gráficos */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
