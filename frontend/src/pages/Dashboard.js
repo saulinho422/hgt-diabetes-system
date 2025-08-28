@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -12,6 +12,8 @@ import {
   BarChart3,
   History
 } from 'lucide-react';
+import { useDashboardData } from '../hooks/useSupabaseData';
+import { useAuth } from '../hooks/useAuth';
 import GlucoseChart from '../components/GlucoseChart';
 import InsulinChart from '../components/InsulinChart';
 import StatsCard from '../components/StatsCard';
@@ -19,7 +21,11 @@ import RecentRecords from '../components/RecentRecords';
 import AlertPanel from '../components/AlertPanel';
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState({
+  const { user, isAuthenticated } = useAuth();
+  const { dashboardData, loading, error } = useDashboardData();
+
+  // Dados padrão caso não esteja autenticado
+  const defaultData = {
     todayStats: {
       averageGlucose: 0,
       totalInsulin: 0,
@@ -29,46 +35,9 @@ const Dashboard = () => {
     weeklyTrend: 'stable',
     alerts: [],
     recentRecords: []
-  });
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      // Simulated API call - replace with actual API
-      const response = await fetch('/api/dashboard');
-      const data = await response.json();
-      setDashboardData(data);
-    } catch (error) {
-      console.error('Erro ao carregar dados do dashboard:', error);
-      // Dados de exemplo para demonstração
-      setDashboardData({
-        todayStats: {
-          averageGlucose: 142,
-          totalInsulin: 28,
-          timeInRange: 78,
-          lastMeasurement: { value: 118, time: '14:30', status: 'normal' }
-        },
-        weeklyTrend: 'improving',
-        alerts: [
-          { type: 'warning', message: 'Glicemia alta detectada às 19:30 (234 mg/dL)', time: '2 horas atrás' },
-          { type: 'info', message: 'Lembrete: Registrar glicemia pós-jantar', time: '30 min atrás' }
-        ],
-        recentRecords: [
-          { date: '27/08', meal: 'Jantar', glucose: 118, insulin: 3, status: 'normal' },
-          { date: '27/08', meal: 'Almoço', glucose: 234, insulin: 5, status: 'high' },
-          { date: '27/08', meal: 'Café', glucose: 98, insulin: 2, status: 'normal' }
-        ]
-      });
-    } finally {
-      setLoading(false);
-    }
   };
+
+  const currentData = dashboardData || defaultData;
 
   const getTrendIcon = (trend) => {
     switch (trend) {
@@ -103,10 +72,36 @@ const Dashboard = () => {
     }
   };
 
+  // Se não estiver autenticado, mostrar tela de login/demo
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Activity className="h-8 w-8 text-blue-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sistema HGT</h2>
+          <p className="text-gray-600 mb-6">Controle completo da sua diabetes</p>
+          <div className="space-y-3">
+            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+              Fazer Login
+            </button>
+            <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+              Criar Conta
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -122,32 +117,32 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-md">
-          {getTrendIcon(dashboardData.weeklyTrend)}
-          <span className={`font-medium ${getTrendColor(dashboardData.weeklyTrend)}`}>
-            {getTrendText(dashboardData.weeklyTrend)}
+          {getTrendIcon(currentData.weeklyTrend)}
+          <span className={`font-medium ${getTrendColor(currentData.weeklyTrend)}`}>
+            {getTrendText(currentData.weeklyTrend)}
           </span>
         </div>
       </div>
 
       {/* Alertas */}
-      {dashboardData.alerts.length > 0 && (
-        <AlertPanel alerts={dashboardData.alerts} />
+      {currentData.alerts.length > 0 && (
+        <AlertPanel alerts={currentData.alerts} />
       )}
 
       {/* Cards de Estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Glicemia Média Hoje"
-          value={`${dashboardData.todayStats.averageGlucose} mg/dL`}
+          value={`${currentData.todayStats.averageGlucose} mg/dL`}
           icon={Activity}
-          trend={dashboardData.todayStats.averageGlucose <= 180 ? 'up' : 'down'}
-          color={dashboardData.todayStats.averageGlucose <= 180 ? 'green' : 'red'}
+          trend={currentData.todayStats.averageGlucose <= 180 ? 'up' : 'down'}
+          color={currentData.todayStats.averageGlucose <= 180 ? 'green' : 'red'}
           subtitle="Meta: 70-180 mg/dL"
         />
         
         <StatsCard
           title="Insulina Total Hoje"
-          value={`${dashboardData.todayStats.totalInsulin} unidades`}
+          value={`${currentData.todayStats.totalInsulin} unidades`}
           icon={Target}
           trend="neutral"
           color="blue"
@@ -156,21 +151,21 @@ const Dashboard = () => {
         
         <StatsCard
           title="Tempo no Alvo"
-          value={`${dashboardData.todayStats.timeInRange}%`}
+          value={`${currentData.todayStats.timeInRange}%`}
           icon={CheckCircle}
-          trend={dashboardData.todayStats.timeInRange >= 70 ? 'up' : 'down'}
-          color={dashboardData.todayStats.timeInRange >= 70 ? 'green' : 'orange'}
+          trend={currentData.todayStats.timeInRange >= 70 ? 'up' : 'down'}
+          color={currentData.todayStats.timeInRange >= 70 ? 'green' : 'orange'}
           subtitle="Meta: >70%"
         />
         
         <StatsCard
           title="Última Medição"
-          value={dashboardData.todayStats.lastMeasurement?.value ? 
-            `${dashboardData.todayStats.lastMeasurement.value} mg/dL` : 'N/A'}
+          value={currentData.todayStats.lastMeasurement?.value ? 
+            `${currentData.todayStats.lastMeasurement.value} mg/dL` : 'N/A'}
           icon={Clock}
           trend="neutral"
-          color={dashboardData.todayStats.lastMeasurement?.status === 'normal' ? 'green' : 'red'}
-          subtitle={dashboardData.todayStats.lastMeasurement?.time || 'Sem registros'}
+          color={currentData.todayStats.lastMeasurement?.status === 'normal' ? 'green' : 'red'}
+          subtitle={currentData.todayStats.lastMeasurement?.time || 'Sem registros'}
         />
       </div>
 
@@ -197,7 +192,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Registros Recentes */}
         <div className="lg:col-span-2">
-          <RecentRecords records={dashboardData.recentRecords} />
+          <RecentRecords records={currentData.recentRecords} />
         </div>
         
         {/* Análise Rápida */}

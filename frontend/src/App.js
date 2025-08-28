@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './hooks/useAuth';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import Registro from './pages/Registro';
@@ -11,13 +12,14 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Navbar />
-        <main className="container mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/registro" element={<Registro />} />
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+          <Navbar />
+          <main className="container mx-auto px-4 py-8">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/registro" element={<Registro />} />
             <Route path="/historico" element={<Historico />} />
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
@@ -43,8 +45,9 @@ function App() {
             },
           }}
         />
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
